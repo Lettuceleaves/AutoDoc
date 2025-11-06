@@ -1,0 +1,4 @@
+scan:
+  path:
+    includes:
+      - test/src/main/java
