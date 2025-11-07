@@ -14,7 +14,9 @@ import com.letuc.app.model.SingleMethodInfo;
 
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class ParseSingleController {
@@ -44,14 +46,19 @@ public class ParseSingleController {
 
             printMethods(controller);
 
-            List<SingleMethodInfo> methodInfos = controller.getMethods().stream()
+            Map<String, SingleMethodInfo> methodInfoMap = controller.getMethods().stream()
                     .map(method -> ParseSingleMethod.parse(method, file))
-                    .toList();
+                    .collect(Collectors.toMap(
+                            SingleMethodInfo::getSignature,
+                            Function.identity()
+                    ));
 
-            ParseInputParams.parse(methodInfos);
-            ParseOutputParam.parse(methodInfos);
+            ParseInputParams.parse(methodInfoMap);
+            ParseOutputParam.parse(methodInfoMap);
 
-            return null;
+            controllerInfo.setControllerMap(methodInfoMap);
+
+            return controllerInfo;
         } catch (Exception e) {
             System.err.println("错误: 解析 AST 或查找 Controller 时发生异常: " + e.getMessage());
             e.printStackTrace();

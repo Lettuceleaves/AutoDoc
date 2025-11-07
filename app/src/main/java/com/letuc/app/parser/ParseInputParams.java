@@ -6,15 +6,14 @@ import com.letuc.app.model.InputParam;
 import com.letuc.app.model.SingleMethodInfo;
 import com.letuc.app.tool.SymbolSolver;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ParseInputParams {
-    public static List<SingleMethodInfo> parse(List<SingleMethodInfo> controllers) {
-        for (SingleMethodInfo singleMethodInfo : controllers) {
-            Path path = singleMethodInfo.getFilePath();
-            for (InputParam inputParam : singleMethodInfo.getInputParams()) {
+    public static Map<String, SingleMethodInfo> parse(Map<String, SingleMethodInfo> controllers) {
+        for (Map.Entry<String, SingleMethodInfo> singleMethodInfoEntry : controllers.entrySet()) {
+            for (InputParam inputParam : singleMethodInfoEntry.getValue().getInputParams()) {
                 parseInputParam(inputParam);
             }
         }

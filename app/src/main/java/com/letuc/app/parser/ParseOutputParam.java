@@ -6,15 +6,14 @@ import com.letuc.app.model.OutputParam;
 import com.letuc.app.model.SingleMethodInfo;
 import com.letuc.app.tool.SymbolSolver;
 
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class ParseOutputParam {
-    public static void parse(List<SingleMethodInfo> controllers) {
-        for (SingleMethodInfo singleMethodInfo : controllers) {
-            Path path = singleMethodInfo.getFilePath();
-            parseOutputParam(singleMethodInfo.getOutputParam());
+    public static void parse(Map<String, SingleMethodInfo> controllers) {
+        for (Map.Entry<String, SingleMethodInfo> singleMethodInfo : controllers.entrySet()) {
+            parseOutputParam(singleMethodInfo.getValue().getOutputParam());
         }
     }
     public static void parseOutputParam(OutputParam outputParam) {
@@ -25,7 +24,7 @@ public class ParseOutputParam {
 
             for (ResolvedFieldDeclaration field : typeDecl.getDeclaredFields()) {
                 try {
-                    OutputParam fieldParam = new OutputParam(field.getType().describe(), field.getName(), null);
+                    OutputParam fieldParam = new OutputParam(field.getType().describe(), field.getName(), null, null);
 
                     if (canResolveType(field.getType().describe())) {
                         parseOutputParam(fieldParam);
@@ -34,8 +33,7 @@ public class ParseOutputParam {
                     }
 
                     subParams.add(fieldParam);
-                } catch (Exception e) {
-                    continue;
+                } catch (Exception ignored) {
                 }
             }
 

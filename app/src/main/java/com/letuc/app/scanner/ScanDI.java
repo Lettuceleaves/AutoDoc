@@ -44,7 +44,6 @@ public class ScanDI {
                 .filter(i -> i.getNameAsString().endsWith("." + simpleName) || i.getNameAsString().equals(simpleName))
                 .findFirst()
                 .map(NodeWithName::getNameAsString)
-                .orElseGet(() -> getFullClassName(cu, simpleName)); // 默认在同一包下
+                .orElseGet(() -> getFullClassName(cu, simpleName));
     }
-
 }

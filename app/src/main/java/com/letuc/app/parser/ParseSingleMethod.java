@@ -29,9 +29,9 @@ public class ParseSingleMethod {
 
                     try {
                         ResolvedType resolvedType = param.getType().resolve();
-                        qualifiedType = resolvedType.describe(); // 会返回全限定名
+                        qualifiedType = resolvedType.describe();
                     } catch (Exception e) {
-                        qualifiedType = param.getTypeAsString(); // 兜底
+                        qualifiedType = param.getTypeAsString();
                     }
 
                     return new InputParam(qualifiedType, param.getNameAsString(), null);
@@ -41,10 +41,12 @@ public class ParseSingleMethod {
         OutputParam outputParam;
 
         try {
-            outputParam = new OutputParam(method.getType().resolve().describe(), method.getNameAsString(), null);
+            outputParam = new OutputParam(method.getType().resolve().describe(), method.getNameAsString(), null, null);
         } catch (Exception e) {
-            outputParam = new  OutputParam(method.getTypeAsString(), method.getNameAsString(), null);
+            outputParam = new  OutputParam(method.getTypeAsString(), method.getNameAsString(), null, null);
         }
+
+        outputParam.addAllArgsConstructorToInitMethods();
 
         return new SingleMethodInfo(
                 path,
