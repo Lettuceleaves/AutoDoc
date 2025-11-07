@@ -37,7 +37,8 @@ public class ParseSingleController {
                     .map(method -> ParseSingleMethod.parse(method, file))
                     .toList();
 
-            methodInfos = ParseParams.parse(methodInfos);
+            ParseInputParams.parse(methodInfos);
+            ParseOutputParam.parse(methodInfos);
 
             return null;
         } catch (Exception e) {

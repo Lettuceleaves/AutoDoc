@@ -10,28 +10,28 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ParseParams {
+public class ParseInputParams {
     public static List<SingleMethodInfo> parse(List<SingleMethodInfo> controllers) {
         for (SingleMethodInfo singleMethodInfo : controllers) {
             Path path = singleMethodInfo.getFilePath();
             for (InputParam inputParam : singleMethodInfo.getInputParams()) {
-                parseParam(inputParam, path);
+                parseInputParam(inputParam);
             }
         }
         return controllers;
     }
 
-    private static InputParam parseParam(InputParam inputParam, Path path) {
+    private static void parseInputParam(InputParam inputParam) {
         List<InputParam> subParams = new ArrayList<>();
         try {
             ResolvedReferenceTypeDeclaration typeDecl =
                     SymbolSolver.combinedTypeSolver.solveType(inputParam.getType());
 
             for (ResolvedFieldDeclaration field : typeDecl.getDeclaredFields()) {
-                InputParam fieldParam = new InputParam(field.getName(), field.getType().describe(), null);
+                InputParam fieldParam = new InputParam(field.getType().describe(), field.getName(), null);
 
                 if (canResolveType(field.getType().describe())) {
-                    parseParam(fieldParam, path);
+                    parseInputParam(fieldParam);
                 } else {
                     fieldParam.setSubParams(null);
                 }
@@ -40,11 +40,10 @@ public class ParseParams {
             }
 
         } catch (Exception e) {
-            return null;
+            return;
         }
 
         inputParam.setSubParams(subParams);
-        return inputParam;
     }
 
     private static boolean canResolveType(String typeName) {

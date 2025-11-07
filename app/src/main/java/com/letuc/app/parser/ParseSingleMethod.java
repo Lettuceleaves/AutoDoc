@@ -38,13 +38,21 @@ public class ParseSingleMethod {
                 })
                 .collect(Collectors.toList());
 
+        OutputParam outputParam;
+
+        try {
+            outputParam = new OutputParam(method.getType().resolve().describe(), method.getNameAsString(), null);
+        } catch (Exception e) {
+            outputParam = new  OutputParam(method.getTypeAsString(), method.getNameAsString(), null);
+        }
+
         return new SingleMethodInfo(
                 path,
                 httpInfo.getKey(),
                 httpInfo.getValue(),
                 method.getNameAsString(),
                 inputParams,
-                new OutputParam(method.getTypeAsString(), method.getNameAsString(), null)
+                outputParam
         );
     }
 
