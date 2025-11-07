@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Map;
 
 public class ScanControllers {
-    public static Map<String, SingleControllerInfo>  parse(List<Path> javaFiles, String controllerTail) {
+    public static Map<String, SingleControllerInfo>  scan(List<Path> javaFiles, String controllerTail) {
         Map<String, SingleControllerInfo> controllerInfo = new HashMap<>();
         for (Path javaFile : javaFiles) {
             if (isController(javaFile, controllerTail)) {

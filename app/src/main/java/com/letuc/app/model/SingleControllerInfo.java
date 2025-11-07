@@ -11,5 +11,6 @@ import java.util.Map;
 @NoArgsConstructor
 public class SingleControllerInfo {
     String className;
+    String url;
     Map<String, SingleMethodInfo> controllerMap;
 }
