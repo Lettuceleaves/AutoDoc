@@ -14,7 +14,7 @@ public class SingleMethodInfo {
     private Path filePath;
     private String httpMethod;
     private String url;
-    private String name;
+    private String signature;
     List<InputParam> inputParams;
     OutputParam outputParam;
 }

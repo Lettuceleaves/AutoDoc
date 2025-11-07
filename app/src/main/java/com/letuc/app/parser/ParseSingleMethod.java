@@ -50,7 +50,7 @@ public class ParseSingleMethod {
                 path,
                 httpInfo.getKey(),
                 httpInfo.getValue(),
-                method.getNameAsString(),
+                method.resolve().getQualifiedSignature(),
                 inputParams,
                 outputParam
         );
