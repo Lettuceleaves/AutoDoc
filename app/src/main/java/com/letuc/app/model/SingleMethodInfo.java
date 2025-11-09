@@ -1,5 +1,6 @@
 package com.letuc.app.model;
 
+import com.github.javaparser.ast.body.MethodDeclaration;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,4 +18,5 @@ public class SingleMethodInfo {
     private String signature;
     List<InputParam> inputParams;
     OutputParam outputParam;
+    private MethodDeclaration methodNode;
 }

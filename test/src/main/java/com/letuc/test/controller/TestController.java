@@ -4,6 +4,7 @@ import com.letuc.test.model.UserDO;
 import com.letuc.test.model.UserDTO;
 import com.letuc.test.result.ResultVO;
 import com.letuc.test.service.TestService;
+import com.letuc.test.tool.TestTool;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,6 +20,9 @@ public class TestController {
 
     @GetMapping("/test1")
     ResultVO<UserDTO> test1(UserDTO data) {
+        TestTool testTool = new TestTool();
+        TestTool.testTool1();
+        testTool.testTool2();
         return new ResultVO<>("0", new UserDTO(), "success");
     }
 

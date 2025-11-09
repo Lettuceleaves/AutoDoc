@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class InterfaceToBean {
-    private static Map<String, String> pairs = new HashMap<>();
+    public static Map<String, String> pairs = new HashMap<>();
 
     public static String get(String key) {
         return pairs.getOrDefault(key, null);

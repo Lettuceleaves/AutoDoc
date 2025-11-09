@@ -54,7 +54,8 @@ public class ParseSingleMethod {
                 httpInfo.getValue(),
                 method.resolve().getQualifiedSignature(),
                 inputParams,
-                outputParam
+                outputParam,
+                method
         );
     }
 
