@@ -3,10 +3,12 @@ package com.letuc.app.parser;
 import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.letuc.app.model.OutputParam;
+import com.letuc.app.model.OutputParamString;
 import com.letuc.app.model.SingleMethodInfo;
 import com.letuc.app.tool.SymbolSolver;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -29,14 +31,17 @@ public class ParseOutputParam {
                         continue;
                     }
                     OutputParam fieldParam = new OutputParam(field.getType().describe(), field.getName(), null, null, null);
-
-                    if (canResolveType(field.getType().describe())) {
-                        parseOutputParam(fieldParam);
+                    if (field.getType().describe().equals("java.lang.String")) {
+                        fieldParam = new OutputParamString(field.getType().describe(), field.getName(), null, null, null, new LinkedList<>(), new LinkedList<>());
+                        subParams.add(fieldParam);
                     } else {
-                        fieldParam.setSubParams(null);
+                        if (canResolveType(field.getType().describe())) {
+                            parseOutputParam(fieldParam);
+                        } else {
+                            fieldParam.setSubParams(null);
+                        }
+                        subParams.add(fieldParam);
                     }
-
-                    subParams.add(fieldParam);
                 } catch (Exception ignored) {
                 }
             }

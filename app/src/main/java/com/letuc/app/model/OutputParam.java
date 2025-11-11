@@ -51,5 +51,4 @@ public class OutputParam {
         this.methods.add(allArgsMethod);
         this.methodsFilter.add(allArgsMethod.getDescribe());
     }
-
 }

@@ -1,15 +1,20 @@
 package com.letuc.app.model;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.EqualsAndHashCode;
 
 import java.util.List;
+import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class OutputParamString {
-    boolean[] warning;
+public class OutputParamString extends OutputParam {
+    List<Boolean> warning;
     List<String> values;
+
+    public OutputParamString(String type, String name, List<OutputParam> subParams, Set<InitMethodInfo> methods, Set<String> methodsFilter, List<Boolean> warning, List<String> values) {
+        super(type, name, subParams, methods, methodsFilter);
+        this.warning = warning;
+        this.values = values;
+    }
 }

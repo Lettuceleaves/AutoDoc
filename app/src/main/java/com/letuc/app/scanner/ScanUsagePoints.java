@@ -1,11 +1,14 @@
 package com.letuc.app.scanner;
 
 import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.resolution.declarations.ResolvedConstructorDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
+import com.letuc.app.model.OutputParamString;
 import com.letuc.app.model.SingleControllerInfo;
 import com.letuc.app.model.SingleMethodInfo;
 import com.letuc.app.tool.ASTMap;
@@ -70,7 +73,21 @@ public class ScanUsagePoints {
                             String interfaceName = resolvedCall.declaringType().getQualifiedName();
                             String nextFqn = resolvedCall.getQualifiedSignature();
 
-                            check(singleMethodInfo.getOutputParam().getMethodsFilter(), nextFqn);
+
+                            if (singleMethodInfo.getOutputParam().getMethodsFilter().contains(nextFqn)) {
+                                System.out.print("""
+                                
+                                命中目标方法
+                                
+                                """);
+                                NodeList<Expression> arguments = methodCallExpr.getArguments();
+                                for (int i = 0; i < arguments.size(); i++) {
+                                    if (arguments.get(i).isStringLiteralExpr() && singleMethodInfo.getOutputParam().getSubParams().get(i) instanceof OutputParamString outputParamString) {
+                                        outputParamString.getValues().add(arguments.get(i).toString());
+                                        System.out.println("属性" + outputParamString.getName() + "可能的值：" + arguments.get(i).toString());
+                                    }
+                                }
+                            }
 
                             if (pairs.containsKey(interfaceName)) {
                                 String implName = pairs.get(interfaceName);
@@ -96,7 +113,19 @@ public class ScanUsagePoints {
 
                             String nextFqn = resolvedConstructor.getQualifiedSignature();
 
-                            check(singleMethodInfo.getOutputParam().getMethodsFilter(), nextFqn);
+                            if (singleMethodInfo.getOutputParam().getMethodsFilter().contains(nextFqn)) {
+                                System.out.print("""
+                                
+                                命中目标方法，参数：
+                                """);
+                                NodeList<Expression> arguments = creationExpr.getArguments();
+                                for (int i = 0; i < arguments.size(); i++) {
+                                    if (arguments.get(i).isStringLiteralExpr() && singleMethodInfo.getOutputParam().getSubParams().get(i) instanceof OutputParamString outputParamString) {
+                                        outputParamString.getValues().add(arguments.get(i).toString());
+                                        System.out.println("属性" + outputParamString.getName() + "可能的值：" + arguments.get(i).toString());
+                                    }
+                                }
+                            }
 
                             if (nextFqn != null && !visitedSignatures.contains(nextFqn)) {
                                 visitedSignatures.add(nextFqn);
@@ -111,18 +140,6 @@ public class ScanUsagePoints {
             }
         }
         return controllerInfo;
-    }
-
-    private static void check(Set<String> methods, String nextFqn) {
-        if (methods.contains(nextFqn)) {
-            System.out.print("""
-                    
-                    命中目标方法
-                    
-                    """);
-//            SingleMethodInfo method  = methods.get(nextFqn);
-//                                method.addCase();
-        }
     }
 
     private static MethodDeclaration findMethodByFqn(CompilationUnit cu, String methodFqn) {
