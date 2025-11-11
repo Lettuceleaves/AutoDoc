@@ -4,13 +4,13 @@ import com.github.javaparser.resolution.declarations.ResolvedFieldDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
 import com.letuc.app.model.InputParam;
 import com.letuc.app.model.SingleMethodInfo;
+import com.letuc.app.tool.ParseRecursiveEndPoint;
 import com.letuc.app.tool.SymbolSolver;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ParseInputParams {
+
     public static Map<String, SingleMethodInfo> parse(Map<String, SingleMethodInfo> controllers) {
         for (Map.Entry<String, SingleMethodInfo> singleMethodInfoEntry : controllers.entrySet()) {
             for (InputParam inputParam : singleMethodInfoEntry.getValue().getInputParams()) {
@@ -29,7 +29,7 @@ public class ParseInputParams {
             for (ResolvedFieldDeclaration field : typeDecl.getDeclaredFields()) {
                 InputParam fieldParam = new InputParam(field.getType().describe(), field.getName(), null);
 
-                if (canResolveType(field.getType().describe())) {
+                if (canResolveType(field.getType().describe()) && !ParseRecursiveEndPoint.set.contains(field.getType().describe())) {
                     parseInputParam(fieldParam);
                 } else {
                     fieldParam.setSubParams(null);

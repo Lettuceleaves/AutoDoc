@@ -25,6 +25,9 @@ public class TestController {
 
     @PostMapping("/test2")
     ResultVO<UserDTO> test2(UserDTO data) {
+        if (data == null) {
+            return new ResultVO<>("1", new UserDTO(), "failed");
+        }
         return new ResultVO<>("0", new UserDTO(), "success");
     }
 

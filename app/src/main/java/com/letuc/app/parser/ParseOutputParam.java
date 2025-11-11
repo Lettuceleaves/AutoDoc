@@ -5,6 +5,8 @@ import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclar
 import com.letuc.app.model.OutputParam;
 import com.letuc.app.model.OutputParamString;
 import com.letuc.app.model.SingleMethodInfo;
+import com.letuc.app.tool.GenericStack;
+import com.letuc.app.tool.ParseRecursiveEndPoint;
 import com.letuc.app.tool.SymbolSolver;
 
 import java.util.ArrayList;
@@ -23,19 +25,25 @@ public class ParseOutputParam {
         List<OutputParam> subParams = new ArrayList<>();
         try {
             ResolvedReferenceTypeDeclaration typeDecl =
-                    SymbolSolver.combinedTypeSolver.solveType(outputParam.getType());
-
+                    SymbolSolver.combinedTypeSolver.solveType(outputParam.getClassName());
+            GenericStack genericStack = new GenericStack(outputParam.getOrigin());
             for (ResolvedFieldDeclaration field : typeDecl.getDeclaredFields()) {
                 try {
                     if (field.isStatic()) {
                         continue;
                     }
-                    OutputParam fieldParam = new OutputParam(field.getType().describe(), field.getName(), null, null, null);
-                    if (field.getType().describe().equals("java.lang.String")) {
-                        fieldParam = new OutputParamString(field.getType().describe(), field.getName(), null, null, null, new LinkedList<>(), new LinkedList<>());
+                    String className = field.getType().describe();
+                    String name = field.getName();
+                    if (field.getType().isTypeVariable()) {
+                        className = genericStack.next();
+                        System.out.println(field.getType().toString());
+                    }
+                    OutputParam fieldParam = new OutputParam(className, null, name, null, null, null);
+                    if (ParseRecursiveEndPoint.set.contains(className)) {
+                        fieldParam = new OutputParamString(className, name, null, null, null, null, new LinkedList<>(), new LinkedList<>());
                         subParams.add(fieldParam);
                     } else {
-                        if (canResolveType(field.getType().describe())) {
+                        if (canResolveType(className)) {
                             parseOutputParam(fieldParam);
                         } else {
                             fieldParam.setSubParams(null);

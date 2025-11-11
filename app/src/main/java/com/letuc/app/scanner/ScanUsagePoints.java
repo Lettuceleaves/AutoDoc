@@ -84,7 +84,7 @@ public class ScanUsagePoints {
                                 for (int i = 0; i < arguments.size(); i++) {
                                     if (arguments.get(i).isStringLiteralExpr() && singleMethodInfo.getOutputParam().getSubParams().get(i) instanceof OutputParamString outputParamString) {
                                         outputParamString.getValues().add(arguments.get(i).toString());
-                                        System.out.println("属性" + outputParamString.getName() + "可能的值：" + arguments.get(i).toString());
+                                        System.out.println("属性" + outputParamString.getClassName() + "可能的值：" + arguments.get(i).toString());
                                     }
                                 }
                             }
@@ -122,7 +122,7 @@ public class ScanUsagePoints {
                                 for (int i = 0; i < arguments.size(); i++) {
                                     if (arguments.get(i).isStringLiteralExpr() && singleMethodInfo.getOutputParam().getSubParams().get(i) instanceof OutputParamString outputParamString) {
                                         outputParamString.getValues().add(arguments.get(i).toString());
-                                        System.out.println("属性" + outputParamString.getName() + "可能的值：" + arguments.get(i).toString());
+                                        System.out.println("属性" + outputParamString.getClassName() + "可能的值：" + arguments.get(i).toString());
                                     }
                                 }
                             }
@@ -138,6 +138,10 @@ public class ScanUsagePoints {
                     }
                 }
             }
+        }
+        System.out.println("接口序列化结果：");
+        for (SingleControllerInfo singleControllerInfo : controllerInfo.values()) {
+            System.out.println(singleControllerInfo.toJson());
         }
         return controllerInfo;
     }

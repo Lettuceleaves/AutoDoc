@@ -40,9 +40,11 @@ public class ParseSingleMethod {
 
         OutputParam outputParam;
         String outputTypeFqn;
+        String origin;
 
         try {
             ResolvedType resolvedType = method.getType().resolve();
+            origin = resolvedType.describe();
             if (resolvedType.isReferenceType()) {
                 outputTypeFqn = resolvedType.asReferenceType().getQualifiedName();
             } else {
@@ -51,9 +53,10 @@ public class ParseSingleMethod {
 
         } catch (Exception e) {
             outputTypeFqn = method.getTypeAsString();
+            origin = method.getTypeAsString();
         }
 
-        outputParam = new OutputParam(outputTypeFqn, method.getNameAsString(), null, null, null);
+        outputParam = new OutputParam(outputTypeFqn, origin, null, null, null, null);
 
         return new SingleMethodInfo(
                 path,
