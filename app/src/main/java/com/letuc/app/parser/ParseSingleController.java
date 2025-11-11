@@ -1,6 +1,5 @@
 package com.letuc.app.parser;
 
-import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.ast.CompilationUnit;
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
@@ -11,6 +10,7 @@ import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.letuc.app.model.SingleControllerInfo;
 import com.letuc.app.model.SingleMethodInfo;
+import com.letuc.app.tool.ASTMap;
 
 import java.nio.file.Path;
 import java.util.List;
@@ -29,7 +29,7 @@ public class ParseSingleController {
 
     public static SingleControllerInfo parse(Path file) {
         try {
-            CompilationUnit cu = StaticJavaParser.parse(file);
+            CompilationUnit cu = ASTMap.AST.get(ASTMap.classNameOfFile.get(file));
             Optional<ClassOrInterfaceDeclaration> controllerClass = findControllerClass(cu);
 
             if (controllerClass.isEmpty()) {

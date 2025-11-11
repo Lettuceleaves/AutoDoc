@@ -5,7 +5,9 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -15,30 +17,39 @@ public class OutputParam {
     String type;
     String name;
     List<OutputParam> subParams;
-    List<InitMethodInfo> methods;
+    Set<InitMethodInfo> methods;
+    Set<String> methodsFilter;
 
     public void addAllArgsConstructorToInitMethods() {
         if (this.methods == null) {
-            this.methods = new ArrayList<>();
+            this.methods = new HashSet<>();
+        }
+        if (this.methodsFilter == null) {
+            this.methodsFilter = new HashSet<>();
         }
         if (this.subParams == null) {
             this.subParams = new ArrayList<>();
         }
+
         List<String> paramTypes = this.subParams.stream()
                 .map(OutputParam::getType)
                 .collect(Collectors.toList());
-        String descriptor = this.type +
-                "<init>(" +
-                String.join(",", paramTypes) +
-                ")";
+
+        String className = this.type;
+        String methodName = this.type;
+
+        if (this.type.contains(".")) {
+            methodName = this.type.substring(this.type.lastIndexOf('.') + 1);
+        }
+
         InitMethodInfo allArgsMethod = new InitMethodInfo(
-                descriptor,
-                this.type,
-                "<init>",
+                className,
+                methodName,
                 paramTypes,
                 true
         );
         this.methods.add(allArgsMethod);
+        this.methodsFilter.add(allArgsMethod.getDescribe());
     }
 
 }

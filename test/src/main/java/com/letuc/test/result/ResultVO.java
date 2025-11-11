@@ -2,14 +2,12 @@ package com.letuc.test.result;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
 @Data
 @Accessors(chain = true)
-@AllArgsConstructor
 @NoArgsConstructor
 public class ResultVO<T> {
     public static final String SUCCESS_CODE = "0";
@@ -33,6 +31,12 @@ public class ResultVO<T> {
         } catch (JsonProcessingException e) {
             return "{}";
         }
+    }
+
+    public ResultVO(String code, T data, String message) {
+        this.code = code;
+        this.data = data;
+        this.message = message;
     }
 
 }

@@ -14,6 +14,7 @@ public class ParseOutputParam {
     public static void parse(Map<String, SingleMethodInfo> controllers) {
         for (Map.Entry<String, SingleMethodInfo> singleMethodInfo : controllers.entrySet()) {
             parseOutputParam(singleMethodInfo.getValue().getOutputParam());
+            singleMethodInfo.getValue().getOutputParam().addAllArgsConstructorToInitMethods();
         }
     }
     public static void parseOutputParam(OutputParam outputParam) {
@@ -24,7 +25,10 @@ public class ParseOutputParam {
 
             for (ResolvedFieldDeclaration field : typeDecl.getDeclaredFields()) {
                 try {
-                    OutputParam fieldParam = new OutputParam(field.getType().describe(), field.getName(), null, null);
+                    if (field.isStatic()) {
+                        continue;
+                    }
+                    OutputParam fieldParam = new OutputParam(field.getType().describe(), field.getName(), null, null, null);
 
                     if (canResolveType(field.getType().describe())) {
                         parseOutputParam(fieldParam);

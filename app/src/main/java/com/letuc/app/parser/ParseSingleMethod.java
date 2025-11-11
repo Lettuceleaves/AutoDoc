@@ -39,14 +39,21 @@ public class ParseSingleMethod {
                 .collect(Collectors.toList());
 
         OutputParam outputParam;
+        String outputTypeFqn;
 
         try {
-            outputParam = new OutputParam(method.getType().resolve().describe(), method.getNameAsString(), null, null);
+            ResolvedType resolvedType = method.getType().resolve();
+            if (resolvedType.isReferenceType()) {
+                outputTypeFqn = resolvedType.asReferenceType().getQualifiedName();
+            } else {
+                outputTypeFqn = resolvedType.describe();
+            }
+
         } catch (Exception e) {
-            outputParam = new  OutputParam(method.getTypeAsString(), method.getNameAsString(), null, null);
+            outputTypeFqn = method.getTypeAsString();
         }
 
-        outputParam.addAllArgsConstructorToInitMethods();
+        outputParam = new OutputParam(outputTypeFqn, method.getNameAsString(), null, null, null);
 
         return new SingleMethodInfo(
                 path,

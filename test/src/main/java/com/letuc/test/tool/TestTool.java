@@ -1,12 +1,13 @@
 package com.letuc.test.tool;
 
+import com.letuc.test.model.UserDTO;
 import lombok.Data;
 
 @Data
 public class TestTool {
     private String name;
 
-    public static String testTool1() {
+    public static String testTool1(UserDTO userDTO) {
         return "TestTool";
     }
 
