@@ -12,13 +12,15 @@ import java.util.List;
 public class InputParam {
     String type;
     String name;
+    String field;
     List<InputParam> subParams;
 
     public String toJson() {
         StringBuilder sb = new StringBuilder();
         sb.append("{");
         sb.append("\"type\":\"").append(type).append("\",");
-        sb.append("\"name\":\"").append(name).append("\"");
+        sb.append("\"name\":\"").append(name).append("\",");
+        sb.append("\"field\":\"").append(field).append("\"");
         if (this.subParams != null && !this.subParams.isEmpty()) {
             sb.append(",\"subParams\":[");
             for (int i = 0; i < subParams.size(); i++) {

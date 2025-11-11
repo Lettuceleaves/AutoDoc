@@ -27,7 +27,7 @@ public class ParseInputParams {
                     SymbolSolver.combinedTypeSolver.solveType(inputParam.getType());
 
             for (ResolvedFieldDeclaration field : typeDecl.getDeclaredFields()) {
-                InputParam fieldParam = new InputParam(field.getType().describe(), field.getName(), null);
+                InputParam fieldParam = new InputParam(field.getType().describe(), field.getName(), null, null);
 
                 if (canResolveType(field.getType().describe()) && !ParseRecursiveEndPoint.set.contains(field.getType().describe())) {
                     parseInputParam(fieldParam);

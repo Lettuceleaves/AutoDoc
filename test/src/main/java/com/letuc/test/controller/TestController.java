@@ -5,6 +5,7 @@ import com.letuc.test.result.ResultVO;
 import com.letuc.test.service.TestService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +25,7 @@ public class TestController {
 //    }
 
     @PostMapping("/test2")
-    ResultVO<UserDTO> test2(UserDTO data) {
+    ResultVO<UserDTO> test2(@RequestBody UserDTO data) {
         if (data == null) {
             return new ResultVO<>("1", new UserDTO(), "failed");
         }

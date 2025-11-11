@@ -2,6 +2,7 @@ package com.letuc.app.parser;
 
 import com.github.javaparser.ast.NodeList;
 import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.Expression;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
@@ -26,15 +27,14 @@ public class ParseSingleMethod {
         List<InputParam> inputParams = method.getParameters().stream()
                 .map(param -> {
                     String qualifiedType;
-
                     try {
                         ResolvedType resolvedType = param.getType().resolve();
                         qualifiedType = resolvedType.describe();
                     } catch (Exception e) {
                         qualifiedType = param.getTypeAsString();
                     }
-
-                    return new InputParam(qualifiedType, param.getNameAsString(), null);
+                    String httpSource = getHttpParamSource(param);
+                    return new InputParam(qualifiedType, param.getNameAsString(), httpSource, null);
                 })
                 .collect(Collectors.toList());
 
@@ -121,5 +121,34 @@ public class ParseSingleMethod {
             }
         }
         return Optional.empty();
+    }
+
+    private static String getHttpParamSource(Parameter param) {
+        if (param.isAnnotationPresent("PathVariable")) {
+            return "PATH";
+        }
+        if (param.isAnnotationPresent("RequestParam")) {
+            return "QUERY";
+        }
+        if (param.isAnnotationPresent("RequestBody")) {
+            return "BODY";
+        }
+        if (param.isAnnotationPresent("RequestHeader")) {
+            return "HEADER";
+        }
+        if (param.isAnnotationPresent("CookieValue")) {
+            return "COOKIE";
+        }
+        if (param.isAnnotationPresent("ModelAttribute")) {
+            return "FORM_DATA";
+        }
+        String typeName = param.getTypeAsString();
+        if (typeName.equals("HttpServletRequest") ||
+                typeName.equals("HttpServletResponse") ||
+                typeName.equals("HttpSession") ||
+                typeName.equals("Principal")) {
+            return "SERVLET_INJECTED";
+        }
+        return "UNKNOWN";
     }
 }
