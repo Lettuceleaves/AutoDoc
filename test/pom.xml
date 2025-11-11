@@ -10,7 +10,7 @@
     </parent>
     <artifactId>test</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Test</name>
+    <name>test</name>
     <developers>
         <developer>
             <name>letuc</name>

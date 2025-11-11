@@ -10,7 +10,7 @@
     </parent>
     <artifactId>scanner</artifactId>
     <version>0.0.1</version>
-    <name>App</name>
+    <name>scanner</name>
     <developers>
         <developer>
             <name>letuc</name>
