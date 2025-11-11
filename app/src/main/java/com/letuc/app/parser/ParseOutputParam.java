@@ -40,7 +40,7 @@ public class ParseOutputParam {
                     }
                     OutputParam fieldParam = new OutputParam(className, null, name, null, null, null);
                     if (ParseRecursiveEndPoint.set.contains(className)) {
-                        fieldParam = new OutputParamString(className, name, null, null, null, null, new LinkedList<>(), new LinkedList<>());
+                        fieldParam = new OutputParamString(className, null, name, null, null, null, new LinkedList<>(), new LinkedList<>());
                         subParams.add(fieldParam);
                     } else {
                         if (canResolveType(className)) {
