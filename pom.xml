@@ -20,7 +20,7 @@
         <relativePath/>
     </parent>
     <modules>
-        <module>app</module>
+        <module>scanner</module>
         <module>test</module>
     </modules>
     <properties>

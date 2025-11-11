@@ -26,7 +26,7 @@
 
         <dependency>
             <groupId>com.letuc.autodoc</groupId>
-            <artifactId>app</artifactId>
+            <artifactId>scanner</artifactId>
             <version>0.0.1</version>
         </dependency>
         <dependency>
