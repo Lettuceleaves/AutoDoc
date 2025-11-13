@@ -11,13 +11,12 @@ import java.util.*;
 
 public class ParseInputParams {
 
-    public static Map<String, SingleMethodInfo> parse(Map<String, SingleMethodInfo> controllers) {
+    public static void parse(Map<String, SingleMethodInfo> controllers) {
         for (Map.Entry<String, SingleMethodInfo> singleMethodInfoEntry : controllers.entrySet()) {
             for (InputParam inputParam : singleMethodInfoEntry.getValue().getInputParams()) {
                 parseInputParam(inputParam);
             }
         }
-        return controllers;
     }
 
     private static void parseInputParam(InputParam inputParam) {

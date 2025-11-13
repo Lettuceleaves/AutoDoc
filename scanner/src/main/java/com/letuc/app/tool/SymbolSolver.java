@@ -8,19 +8,18 @@ import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeS
 
 import java.io.File;
 import java.nio.file.Path;
-import java.util.List;
 
 public class SymbolSolver {
 
     public static volatile CombinedTypeSolver combinedTypeSolver;
 
-    public static synchronized void init(List<Path> paths) {
+    public static synchronized void init() {
         if (combinedTypeSolver != null) return;
 
         combinedTypeSolver = new CombinedTypeSolver();
         combinedTypeSolver.add(new ReflectionTypeSolver());
 
-        for (Path path : paths) {
+        for (Path path : ConfigMap.srcPaths) {
             File file = path.toFile();
             if (file.exists() && file.isDirectory()) {
                 combinedTypeSolver.add(new JavaParserTypeSolver(file));

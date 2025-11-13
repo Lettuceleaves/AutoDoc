@@ -1,24 +1,25 @@
 package com.letuc.app.scanner;
 
+import com.letuc.app.tool.ConfigMap;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class ScanFilePaths {
-    public static List<Path> scan(List<Path> srcPaths) {
+    public static List<Path> scan() {
         List<Path> filePaths = new ArrayList<>();
-        for (Path srcPath : srcPaths) {
+        for (Path srcPath : ConfigMap.srcPaths) {
             if (Files.isDirectory(srcPath)) {
                 System.out.println("-> 开始扫描目录: " + srcPath);
                 try (Stream<Path> stream = Files.walk(srcPath)) {
                     List<Path> filesInDir = stream
                             .filter(Files::isRegularFile)
                             .filter(p -> p.toString().toLowerCase().endsWith(".java"))
-                            .collect(Collectors.toList());
+                            .toList();
                     filePaths.addAll(filesInDir);
                 } catch (IOException e) {
                     System.err.println("错误: 遍历目录失败 " + srcPath + ": " + e.getMessage());

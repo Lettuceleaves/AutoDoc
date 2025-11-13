@@ -33,7 +33,6 @@ public class ParseSingleController {
             Optional<ClassOrInterfaceDeclaration> controllerClass = findControllerClass(cu);
 
             if (controllerClass.isEmpty()) {
-                System.err.println("错误: 文件中未找到 Controller 类注解。");
                 return null;
             }
 

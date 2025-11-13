@@ -5,6 +5,7 @@ import com.github.javaparser.ast.body.MethodDeclaration;
 import com.github.javaparser.ast.body.Parameter;
 import com.github.javaparser.ast.expr.AnnotationExpr;
 import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MemberValuePair;
 import com.github.javaparser.ast.expr.NormalAnnotationExpr;
 import com.github.javaparser.resolution.types.ResolvedType;
 import com.letuc.app.model.InputParam;
@@ -101,7 +102,7 @@ public class ParseSingleMethod {
 
             Optional<Expression> pathExpression = normalAnnotation.getPairs().stream()
                     .filter(pair -> pair.getNameAsString().equals("value") || pair.getNameAsString().equals("path"))
-                    .map(pair -> pair.getValue())
+                    .map(MemberValuePair::getValue)
                     .findFirst();
 
             pathValue = pathExpression.flatMap(ParseSingleMethod::extractStringValue).orElse("");

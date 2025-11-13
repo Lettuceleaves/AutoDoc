@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.List;
 
 public class MarkDown {
@@ -17,18 +16,17 @@ public class MarkDown {
     private static final ObjectMapper objectMapper = new ObjectMapper()
             .configure(SerializationFeature.INDENT_OUTPUT, true);
 
-    public static void saveToFile(String content, String fullFilePath) throws Exception {
+    public static void saveToFile(String content, Path fullFilePath) throws Exception {
         String mdContent = convert(content);
 
-        if (fullFilePath == null || fullFilePath.trim().isEmpty()) {
+        if (fullFilePath == null) {
             throw new IllegalArgumentException("File path cannot be null or empty.");
         }
-        Path path = Paths.get(fullFilePath);
-        Path parentDir = path.getParent();
+        Path parentDir = fullFilePath.getParent();
         if (parentDir != null && !Files.exists(parentDir)) {
             Files.createDirectories(parentDir);
         }
-        Files.writeString(path, mdContent, StandardCharsets.UTF_8);
+        Files.writeString(fullFilePath, mdContent, StandardCharsets.UTF_8);
     }
 
     public static String convert(String jsonString) throws Exception {

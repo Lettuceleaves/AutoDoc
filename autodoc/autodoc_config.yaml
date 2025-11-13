@@ -1,0 +1,5 @@
+scan:
+  src:
+      - test/src/main/java/
+root:
+  - E:\projects\AutoDoc\

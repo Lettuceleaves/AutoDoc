@@ -8,8 +8,6 @@ import com.github.javaparser.ast.expr.MethodCallExpr;
 import com.github.javaparser.ast.expr.ObjectCreationExpr;
 import com.github.javaparser.resolution.declarations.ResolvedConstructorDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
-import com.letuc.app.export.JSON;
-import com.letuc.app.export.MarkDown;
 import com.letuc.app.model.OutputParamString;
 import com.letuc.app.model.SingleControllerInfo;
 import com.letuc.app.model.SingleMethodInfo;
@@ -20,7 +18,7 @@ import java.util.*;
 import static com.github.javaparser.ast.Node.SYMBOL_RESOLVER_KEY;
 
 public class ScanUsagePoints {
-    public static Map<String, SingleControllerInfo> scan(
+    public static void scan(
             Map<String, SingleControllerInfo> controllerInfo,
             Map<String, String> pairs) throws Exception {
 
@@ -141,15 +139,6 @@ public class ScanUsagePoints {
                 }
             }
         }
-        System.out.println("接口序列化结果：");
-        StringBuilder sb  = new StringBuilder();
-        for (SingleControllerInfo singleControllerInfo : controllerInfo.values()) {
-            System.out.println(singleControllerInfo.toJson());
-            sb.append(singleControllerInfo.toJson());
-        }
-        MarkDown.saveToFile(sb.toString(), "temp/my_generated_report.md");
-        JSON.saveToFile(sb.toString(), "temp/my_generated_report.json");
-        return controllerInfo;
     }
 
     private static MethodDeclaration findMethodByFqn(CompilationUnit cu, String methodFqn) {
