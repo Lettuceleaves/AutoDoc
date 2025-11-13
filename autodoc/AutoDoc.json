@@ -3,6 +3,38 @@
   "url": "/test",
   "controllerMap": [
     {
+      "methodName": "com.letuc.test.controller.TestController.hello()",
+      "methodInfo": {
+        "httpMethod": "GET",
+        "url": "/hello",
+        "signature": "com.letuc.test.controller.TestController.hello()",
+        "inputParams": [],
+        "outputParam": {
+          "className": "java.lang.String",
+          "origin": "java.lang.String",
+          "name": "null",
+          "subParams": [
+            {
+              "className": "byte[]",
+              "name": "value"
+            },
+            {
+              "className": "byte",
+              "name": "coder"
+            },
+            {
+              "className": "int",
+              "name": "hash"
+            },
+            {
+              "className": "boolean",
+              "name": "hashIsZero"
+            }
+          ]
+        }
+      }
+    },
+    {
       "methodName": "com.letuc.test.controller.TestController.test2(com.letuc.test.model.UserDTO)",
       "methodInfo": {
         "httpMethod": "POST",

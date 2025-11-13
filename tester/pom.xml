@@ -8,9 +8,9 @@
         <version>0.0.1</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
-    <artifactId>test</artifactId>
+    <artifactId>tester</artifactId>
     <version>0.0.1</version>
-    <name>test</name>
+    <name>tester</name>
     <developers>
         <developer>
             <name>letuc</name>
@@ -22,12 +22,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.letuc.autodoc</groupId>
-            <artifactId>scanner</artifactId>
-            <version>0.0.1</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -41,15 +35,14 @@
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.15.2</version>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
             </plugin>
         </plugins>
     </build>

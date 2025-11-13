@@ -4,7 +4,39 @@
 
 ---
 
-## 1. test2 (`POST /test/test2`)
+## 1. hello (`GET /test/hello`)
+
+**完整方法签名:** `com.letuc.test.controller.TestController.hello()`
+
+### 请求参数 (Request)
+
+*无请求参数。*
+
+### 响应内容 (Response)
+
+**响应类型:** `String`
+
+| 字段名 | 类型 | 描述 |
+| :--- | :--- | :--- |
+| `value` | `byte[]` | |
+| `coder` | `byte` | |
+| `hash` | `int` | |
+| `hashIsZero` | `boolean` | |
+
+#### 响应体示例 (Response Body Example)
+
+```json
+{
+  "value" : "base64-encoded-string",
+  "coder" : null,
+  "hash" : 1,
+  "hashIsZero" : true
+}
+```
+
+---
+
+## 2. test2 (`POST /test/test2`)
 
 **完整方法签名:** `com.letuc.test.controller.TestController.test2(com.letuc.test.model.UserDTO)`
 

@@ -22,6 +22,7 @@
     <modules>
         <module>scanner</module>
         <module>test</module>
+        <module>tester</module>
     </modules>
     <properties>
         <java.version>17</java.version>

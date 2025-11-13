@@ -4,10 +4,7 @@ import com.letuc.test.model.UserDTO;
 import com.letuc.test.result.ResultVO;
 import com.letuc.test.service.TestService;
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/test")
@@ -30,6 +27,11 @@ public class TestController {
             return new ResultVO<>("1", new UserDTO(), "failed");
         }
         return new ResultVO<>("0", new UserDTO(), "success");
+    }
+
+    @GetMapping("/hello")
+    String hello() {
+        return "hello";
     }
 
 //    @GetMapping("/test3")

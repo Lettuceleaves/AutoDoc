@@ -15,15 +15,22 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
         </processorPath>
-        <module name="scanner" />
         <module name="test" />
+        <module name="scanner" />
+        <module name="tester" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="AutoDoc" target="1.5" />
+      <module name="AutoPost" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="AutoPost" options="-parameters" />
       <module name="scanner" options="-parameters" />
       <module name="test" options="-parameters" />
+      <module name="tester" options="-parameters" />
     </option>
   </component>
 </project>

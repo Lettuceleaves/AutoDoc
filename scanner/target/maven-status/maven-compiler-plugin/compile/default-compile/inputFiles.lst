@@ -4,8 +4,8 @@ E:\projects\AutoDoc\scanner\src\main\java\com\letuc\app\export\MarkDown.java
 E:\projects\AutoDoc\scanner\src\main\java\com\letuc\app\model\SingleControllerInfo.java
 E:\projects\AutoDoc\scanner\src\main\java\com\letuc\app\tool\ParseRecursiveEndPoint.java
 E:\projects\AutoDoc\scanner\src\main\java\com\letuc\app\parser\ParseSingleMethod.java
+E:\projects\AutoDoc\scanner\src\main\java\com\letuc\app\tool\ConfigMap.java
 E:\projects\AutoDoc\scanner\src\main\java\com\letuc\app\tool\InterfaceToBean.java
-E:\projects\AutoDoc\scanner\src\main\java\com\letuc\app\scanner\ScanConfig.java
 E:\projects\AutoDoc\scanner\src\main\java\com\letuc\app\model\InitMethodInfo.java
 E:\projects\AutoDoc\scanner\src\main\java\com\letuc\app\scanner\ScanDI.java
 E:\projects\AutoDoc\scanner\src\main\java\com\letuc\app\tool\SymbolSolver.java

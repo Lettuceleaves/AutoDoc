@@ -1,0 +1,9 @@
+com\letuc\tester\model\ApiDefinition.class
+com\letuc\tester\TesterApplication.class
+com\letuc\tester\sender\SimpleSender.class
+com\letuc\tester\reader\TemplateLoader.class
+com\letuc\tester\model\ControllerInfo.class
+com\letuc\tester\config\RestTemplateConfig.class
+com\letuc\tester\model\MethodInfo.class
+com\letuc\tester\task\TaskFactory.class
+com\letuc\tester\task\SimpleTask.class
