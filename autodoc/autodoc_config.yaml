@@ -3,3 +3,6 @@ scan:
       - test/src/main/java/
 root:
   - E:\projects\AutoDoc\
+
+method:
+  - com.letuc.test.result.Result

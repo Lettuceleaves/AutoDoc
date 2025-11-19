@@ -15,8 +15,8 @@
         <processorPath useClasspath="false">
           <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.36/lombok-1.18.36.jar" />
         </processorPath>
-        <module name="test" />
         <module name="scanner" />
+        <module name="test" />
         <module name="tester" />
       </profile>
     </annotationProcessing>

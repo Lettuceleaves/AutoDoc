@@ -19,6 +19,11 @@ public enum AdviceErrorCode implements ErrorCode {
         this.message = message;
     }
 
+    AdviceErrorCode(String code, String message, int a, char b) {
+        this.code = code;
+        this.message = message;
+    }
+
     @Override
     public String code() {
         return code;

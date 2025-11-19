@@ -5,6 +5,7 @@ import com.letuc.app.export.MarkDown;
 import com.letuc.app.model.SingleControllerInfo;
 import com.letuc.app.scanner.ScanControllers;
 import com.letuc.app.scanner.ScanDI;
+import com.letuc.app.scanner.ScanEnums;
 import com.letuc.app.scanner.ScanFilePaths;
 import com.letuc.app.scanner.ScanUsagePoints;
 import com.letuc.app.tool.ASTMap;
@@ -15,6 +16,8 @@ import com.letuc.app.tool.SymbolSolver;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Map;
+
+import static com.letuc.app.tool.ConfigMap.collectTargetMethods;
 
 public class AutoDocStarter {
 
@@ -29,10 +32,12 @@ public class AutoDocStarter {
             List<Path> allJavaFiles = ScanFilePaths.scan();
             System.out.println("开始构建全局方法索引...");
             ASTMap.buildMap(allJavaFiles);
+            collectTargetMethods();
             System.out.println("索引构建完毕，共 " + ASTMap.AST.size() + " 个类。");
 
             Map<String, SingleControllerInfo> controllerInfo = ScanControllers.scan(allJavaFiles);
             ScanDI.scan(allJavaFiles);
+            ScanEnums.scan();
             InterfaceToBean.print();
 
             System.out.println("开始扫描调用链 (BFS)...");
