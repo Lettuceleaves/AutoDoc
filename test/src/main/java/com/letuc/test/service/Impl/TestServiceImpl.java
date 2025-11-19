@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class TestServiceImpl implements TestService {
-    public ResultVO test(UserDTO userDTO) {
-        return new ResultVO("test3", new UserDO(userDTO.getUsername(), userDTO.getAge()), "test3");
+    public ResultVO<UserDO> test(UserDTO userDTO) {
+        return new ResultVO<>("test3", new UserDO(userDTO.getUsername(), userDTO.getAge()), "test3");
     }
 }

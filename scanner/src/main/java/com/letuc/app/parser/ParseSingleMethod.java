@@ -57,7 +57,7 @@ public class ParseSingleMethod {
             origin = method.getTypeAsString();
         }
 
-        outputParam = new OutputParam(outputTypeFqn, origin, null, null, null, null);
+        outputParam = new OutputParam(outputTypeFqn, origin, null, null);
 
         return new SingleMethodInfo(
                 path,

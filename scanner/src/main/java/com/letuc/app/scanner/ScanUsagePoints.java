@@ -173,8 +173,11 @@ public class ScanUsagePoints {
                             ResolvedConstructorDeclaration resolvedConstructor = creationExpr.resolve();
 
                             String nextFqn = resolvedConstructor.getQualifiedSignature();
+                            String typeFQN = resolvedConstructor.declaringType().getQualifiedName();
+                            String methodName = resolvedConstructor.getName();
+                            String currentMethodFQN = typeFQN + "." + methodName;
 
-                            if (singleMethodInfo.getOutputParam().getMethodsFilter().contains(nextFqn)) {
+                            if (ConfigMap.targets.contains(currentMethodFQN)) {
                                 System.out.print("""
                                 
                                 命中目标方法，参数：
