@@ -1,8 +1,13 @@
 scan:
   src:
-      - test/src/main/java/
+      - common\src\main\java
+      - contest\src\main\java
+      - practice\src\main\java
+      - advice\src\main\java
+      - sys\src\main\java
+      - user\src\main\java
 root:
-  - E:\projects\AutoDoc\
+  - E:\projects\LeTucOJ\
 
 method:
-  - com.letuc.test.result.Result
+  - com.LetucOJ.common.result.Result

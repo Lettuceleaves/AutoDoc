@@ -6,8 +6,8 @@ import com.letuc.test.result.errorcode.ErrorCode;
 
 public final class Result {
 
-    public static ResultVO<Void> success() {
-        return new ResultVO<Void>()
+    public static <T> ResultVO<T> success() {
+        return new ResultVO<T>()
                 .setCode(ResultVO.SUCCESS_CODE);
     }
 
@@ -15,14 +15,14 @@ public final class Result {
         return new ResultVO<T>().setCode(ResultVO.SUCCESS_CODE).setData(data);
     }
 
-    public static ResultVO<Void> failure() {
-        return new ResultVO<Void>()
+    public static <T> ResultVO<T> failure() {
+        return new ResultVO<T>()
                 .setCode(BaseErrorCode.SERVICE_ERROR.code())
                 .setMessage(BaseErrorCode.SERVICE_ERROR.message());
     }
 
-    public static ResultVO<Void> failure(ErrorCode errorCode) {
-        return new ResultVO<Void>()
+    public static <T> ResultVO<T> failure(ErrorCode errorCode) {
+        return new ResultVO<T>()
                 .setCode(errorCode.code())
                 .setMessage(errorCode.message());
     }

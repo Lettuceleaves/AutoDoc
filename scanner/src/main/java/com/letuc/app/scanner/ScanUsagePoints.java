@@ -10,7 +10,7 @@ import com.github.javaparser.resolution.declarations.ResolvedConstructorDeclarat
 import com.github.javaparser.resolution.declarations.ResolvedEnumConstantDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
 import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
-import com.letuc.app.model.OutputParamString;
+import com.letuc.app.model.OutputParamCode;
 import com.letuc.app.model.SingleControllerInfo;
 import com.letuc.app.model.SingleMethodInfo;
 import com.letuc.app.tool.ASTMap;
@@ -21,9 +21,16 @@ import java.util.*;
 import static com.github.javaparser.ast.Node.SYMBOL_RESOLVER_KEY;
 
 public class ScanUsagePoints {
+
+    private static final int TYPE_STRING_LITERAL = 0;
+    private static final int TYPE_ENUM = 1;
+
+    private static final String SUCCESS_METHOD = "com.letuc.test.result.Result.success";
+    private static final String FAILURE_METHOD = "com.letuc.test.result.Result.failure";
+
     public static void scan(
             Map<String, SingleControllerInfo> controllerInfo,
-            Map<String, String> pairs) throws Exception {
+            Map<String, String> pairs) {
 
         for (SingleControllerInfo singleControllerInfo : controllerInfo.values()) {
             Map<String, SingleMethodInfo> methods = singleControllerInfo.getControllerMap();
@@ -54,7 +61,7 @@ public class ScanUsagePoints {
                     }
                     CompilationUnit cu = ASTMap.AST.get(classFqn);
                     if (cu == null) {
-                        System.err.println("找不到 " + classFqn + " 对应的AST (来自 " + currentFqn + ")");
+                        System.out.println("找不到 " + classFqn + " 对应的AST (来自 " + currentFqn + ")");
                         continue;
                     }
                     cu.setData(
@@ -92,39 +99,32 @@ public class ScanUsagePoints {
                                 if (!arguments.isEmpty()) {
                                     Expression firstArg = arguments.get(0);
 
-                                    // --- 场景 1: 字符串字面量 ---
+                                    // 1. 处理 String 字面量
                                     if (firstArg.isStringLiteralExpr()) {
                                         String value = firstArg.asStringLiteralExpr().asString();
                                         System.out.println("提取到字符串参数: " + value);
-                                        if (singleMethodInfo.getOutputParam().getSubParams().get(0) instanceof OutputParamString outputParamString) {
-                                            outputParamString.getValues().add(value);
+                                        if (singleMethodInfo.getOutputParam().getSubParams().get(0) instanceof OutputParamCode outputParamCode) {
+                                            // 【修改】直接调用 addEntry，自动处理 Set 去重
+                                            outputParamCode.addEntry(TYPE_STRING_LITERAL, value);
                                         }
                                     }
 
-                                    // --- 场景 2: 枚举引用 (利用 SymbolSolver 统一处理) ---
-                                    // 无论是 FieldAccess (ErrorCode.FAIL) 还是 NameExpr (FAIL - 静态导入)
-                                    // 只要能 resolve 出它是 EnumConstant，逻辑就是通用的
+                                    // 2. 处理枚举/字段引用
                                     else if (firstArg.isFieldAccessExpr() || firstArg.isNameExpr()) {
                                         try {
-                                            ResolvedValueDeclaration resolvedDecl = null;
+                                            ResolvedValueDeclaration resolvedDecl;
 
-                                            // 1. 尝试解析表达式
                                             if (firstArg.isFieldAccessExpr()) {
                                                 resolvedDecl = firstArg.asFieldAccessExpr().resolve();
                                             } else {
                                                 resolvedDecl = firstArg.asNameExpr().resolve();
                                             }
 
-                                            // 2. 检查解析结果是否为枚举常量
                                             if (resolvedDecl instanceof ResolvedEnumConstantDeclaration enumConst) {
 
-                                                // 3. 获取准确的信息
-                                                // 获取枚举常量的名称 (例如: SERVICE_ERROR)
                                                 String constName = enumConst.getName();
-                                                // 获取枚举定义的完全限定名 (例如: com.letuc.test.result.errorcode.BaseErrorCode)
                                                 String enumClassFqn = enumConst.getType().asReferenceType().getQualifiedName();
 
-                                                // 4. 直接去 Map 里查 (无需模糊匹配，因为拿到的是标准的 FQN)
                                                 Map<String, List<String>> enumData = ScanEnums.getEnumConstantsMap(enumClassFqn);
 
                                                 if (!enumData.isEmpty() && enumData.containsKey(constName)) {
@@ -132,8 +132,10 @@ public class ScanUsagePoints {
                                                     System.out.println("提取到枚举参数 [解析成功]: " + enumClassFqn + "." + constName);
                                                     System.out.println("  -> 枚举详细值: " + values);
                                                     String enumString = enumClassFqn + "." + constName;
-                                                    if (singleMethodInfo.getOutputParam().getSubParams().get(0) instanceof OutputParamString outputParamString) {
-                                                        outputParamString.getValues().add(enumString);
+
+                                                    if (singleMethodInfo.getOutputParam().getSubParams().get(0) instanceof OutputParamCode outputParamCode) {
+                                                        // 【修改】直接调用 addEntry，Type 为 1
+                                                        outputParamCode.addEntry(TYPE_ENUM, enumString);
                                                     }
                                                 } else {
                                                     System.err.println("警告: 代码中使用了枚举 " + enumClassFqn + "." + constName + "，但在 ScanEnums 结果中未找到对应定义。可能未包含在扫描路径中。");
@@ -145,6 +147,21 @@ public class ScanUsagePoints {
                                         } catch (Exception e) {
                                             System.err.println("SymbolSolver 解析参数失败 [" + firstArg + "]: " + e.getMessage());
                                         }
+                                    }
+                                } else {
+                                    // 3. 处理无参默认方法 (Success/Failure)
+                                    if (currentMethodFQN.equals(SUCCESS_METHOD)) {
+                                        if (singleMethodInfo.getOutputParam().getSubParams().get(0) instanceof OutputParamCode outputParamCode) {
+                                            // 【修改】直接调用 addEntry
+                                            outputParamCode.addEntry(TYPE_STRING_LITERAL, "0");
+                                        }
+                                    } else if (currentMethodFQN.equals(FAILURE_METHOD)) {
+                                        if (singleMethodInfo.getOutputParam().getSubParams().get(0) instanceof OutputParamCode outputParamCode) {
+                                            // 【修改】直接调用 addEntry
+                                            outputParamCode.addEntry(TYPE_STRING_LITERAL, "B010001");
+                                        }
+                                    } else {
+                                        System.err.println("未提供code");
                                     }
                                 }
                                 continue;
@@ -162,7 +179,7 @@ public class ScanUsagePoints {
                                 System.out.println("  -> 发现新调用: " + nextFqn);
                             }
                         } catch (Exception e) {
-                            System.err.println("  -> 解析失败: " + methodCallExpr.getNameAsString() + " (原因: " + e.getClass().getSimpleName() + ")");
+                            System.out.println("  -> 解析失败: " + methodCallExpr.getNameAsString() + " (原因: " + e.getClass().getSimpleName() + ")");
                         }
                     }
 
@@ -173,9 +190,7 @@ public class ScanUsagePoints {
                             ResolvedConstructorDeclaration resolvedConstructor = creationExpr.resolve();
 
                             String nextFqn = resolvedConstructor.getQualifiedSignature();
-                            String typeFQN = resolvedConstructor.declaringType().getQualifiedName();
-                            String methodName = resolvedConstructor.getName();
-                            String currentMethodFQN = typeFQN + "." + methodName;
+                            String currentMethodFQN = resolvedConstructor.declaringType().getQualifiedName();
 
                             if (ConfigMap.targets.contains(currentMethodFQN)) {
                                 System.out.print("""
@@ -184,9 +199,14 @@ public class ScanUsagePoints {
                                 """);
                                 NodeList<Expression> arguments = creationExpr.getArguments();
                                 for (int i = 0; i < arguments.size(); i++) {
-                                    if (arguments.get(i).isStringLiteralExpr() && singleMethodInfo.getOutputParam().getSubParams().get(i) instanceof OutputParamString outputParamString) {
-                                        outputParamString.getValues().add(arguments.get(i).toString());
-                                        System.out.println("属性" + outputParamString.getClassName() + "可能的值：" + arguments.get(i).toString());
+                                    // 4. 处理构造函数中的字符串参数
+                                    if (arguments.get(i).isStringLiteralExpr() && singleMethodInfo.getOutputParam().getSubParams().get(i) instanceof OutputParamCode outputParamCode) {
+                                        String val = arguments.get(i).asStringLiteralExpr().asString();
+
+                                        // 【修改】直接调用 addEntry
+                                        outputParamCode.addEntry(TYPE_STRING_LITERAL, val);
+
+                                        System.out.println("属性" + outputParamCode.getClassName() + "可能的值：" + val);
                                     }
                                 }
                             }
@@ -197,7 +217,7 @@ public class ScanUsagePoints {
                                 System.out.println("  -> [实例] 发现新调用: " + nextFqn);
                             }
                         } catch (Exception e) {
-                            System.err.println("  -> [实例] 解析失败: " + creationExpr.getType().getNameAsString() + " (原因: " + e + ")");
+                            System.out.println("  -> [实例] 解析失败: " + creationExpr.getType().getNameAsString() + " (原因: " + e + ")");
                         }
                     }
                 }
@@ -229,5 +249,4 @@ public class ScanUsagePoints {
 
         return methodFqn.substring(0, lastDot);
     }
-
 }

@@ -1,6 +1,7 @@
 package com.letuc.app.export;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -35,9 +36,19 @@ public class MarkDown {
         }
 
         try {
-            ApiDoc apiDoc = objectMapper.readValue(jsonString, ApiDoc.class);
-            return buildMarkdownFromApiDoc(apiDoc);
+            List<ApiDoc> apiDocList = objectMapper.readValue(jsonString, new TypeReference<List<ApiDoc>>() {});
+
+            StringBuilder fullMarkdown = new StringBuilder();
+
+            for (ApiDoc apiDoc : apiDocList) {
+                fullMarkdown.append(buildMarkdownFromApiDoc(apiDoc));
+                fullMarkdown.append("\n\n<br>\n\n---\n\n<br>\n\n");
+            }
+
+            return fullMarkdown.toString();
+
         } catch (Exception e) {
+            e.printStackTrace();
             return "Error parsing JSON (malformed input): " + e.getMessage();
         }
     }
@@ -97,7 +108,7 @@ public class MarkDown {
                 bodyParam = p;
                 for (InputSubParam sub : p.subParams) {
                     md.append("| &nbsp;&nbsp;&nbsp;↳ `").append(sub.name).append("` | `")
-                            .append(formatType(sub.type)).append("` | BODY | |\n");
+                            .append(formatType(sub.type)).append("` | `BODY` | |\n");
                 }
             }
         }
@@ -125,6 +136,8 @@ public class MarkDown {
         buildOutputTableRecursive(md, output.subParams, 0);
         md.append("\n");
 
+        buildEnumValuesRecursive(md, output.subParams);
+
         md.append("#### 响应体示例 (Response Body Example)\n\n");
         md.append("```json\n");
         md.append(generateResponseJsonExample(output));
@@ -136,13 +149,56 @@ public class MarkDown {
         String indent = "&nbsp;&nbsp;&nbsp;".repeat(indentLevel) + (indentLevel > 0 ? "↳ " : "");
 
         for (OutputSubParam p : params) {
-            md.append("| ").append(indent).append("`").append(p.name).append("` | `")
-                    .append(formatType(p.className)).append("` | |\n");
+            String fieldName = getValidName(p);
+
+            md.append("| ").append(indent).append("`").append(fieldName).append("` | `")
+                    .append(formatType(p.className)).append("` | ").append(" |\n");
+
             buildOutputTableRecursive(md, p.subParams, indentLevel + 1);
         }
     }
 
+    /**
+     * 【修改点 1】 适配新的 JSON 结构，直接读取 description 字段
+     */
+    private static void buildEnumValuesRecursive(StringBuilder md, List<OutputSubParam> params) {
+        if (params == null) return;
 
+        for (OutputSubParam p : params) {
+            if (p.values != null && !p.values.isEmpty()) {
+                String fieldName = getValidName(p);
+
+                md.append("**字段 `").append(fieldName).append("` 的可选值:**\n\n");
+
+                md.append("| 值 (Value) | 描述 (Description) |\n");
+                md.append("| :--- | :--- |\n");
+
+                for (JsonNode valNode : p.values) {
+                    String valueStr = "";
+                    String descStr = "";
+
+                    // 1. 获取 Value
+                    if (valNode.has("value")) {
+                        // 现在的 value 字段就是纯字符串了（因为 description 已经分离出去了）
+                        valueStr = valNode.get("value").asText();
+                        // 美化：去除包名
+                        if (valueStr.contains(".")) {
+                            valueStr = valueStr.substring(valueStr.lastIndexOf('.') + 1);
+                        }
+                    }
+
+                    // 2. 获取 Description (新加的逻辑)
+                    if (valNode.has("description") && !valNode.get("description").isNull()) {
+                        descStr = valNode.get("description").asText();
+                    }
+
+                    md.append("| `").append(valueStr).append("` | ").append(descStr).append(" |\n");
+                }
+                md.append("\n");
+            }
+            buildEnumValuesRecursive(md, p.subParams);
+        }
+    }
 
     private static String generateRequestJsonExample(InputParam bodyParam) {
         ObjectNode root = objectMapper.createObjectNode();
@@ -162,25 +218,50 @@ public class MarkDown {
         ObjectNode root = objectMapper.createObjectNode();
         if (output.subParams != null) {
             for (OutputSubParam sub : output.subParams) {
-                root.set(sub.name, buildJsonNodeRecursive(sub));
+                root.set(getValidName(sub), buildJsonNodeRecursive(sub));
             }
         }
         try {
             return objectMapper.writeValueAsString(root);
         } catch (Exception e) {
-            return "{\"error\": \"Failed to generate example\"}";
+            return "{\"error\": \"Failed to generate example: " + e.getMessage() + "\"}";
         }
     }
 
+    /**
+     * 【修改点 2】 生成 JSON 示例时，也适配一下新的结构
+     */
     private static JsonNode buildJsonNodeRecursive(OutputSubParam param) {
         if (param.subParams != null && !param.subParams.isEmpty()) {
             ObjectNode node = objectMapper.createObjectNode();
             for (OutputSubParam sub : param.subParams) {
-                node.set(sub.name, buildJsonNodeRecursive(sub));
+                node.set(getValidName(sub), buildJsonNodeRecursive(sub));
             }
             return node;
         }
+
+        // 尝试从 values 列表中取第一个值作为示例
+        if (param.values != null && !param.values.isEmpty()) {
+            JsonNode firstVal = param.values.get(0);
+            if (firstVal.has("value")) {
+                String valStr = firstVal.get("value").asText();
+                // 美化
+                if (valStr.contains(".")) valStr = valStr.substring(valStr.lastIndexOf('.') + 1);
+                return objectMapper.valueToTree(valStr);
+            }
+        }
+
         return getExampleValue(param.className);
+    }
+
+    private static String getValidName(OutputSubParam p) {
+        if (p.name != null && !p.name.isEmpty() && !"null".equals(p.name)) {
+            return p.name;
+        }
+        if (p.origin != null && !p.origin.isEmpty()) {
+            return p.origin;
+        }
+        return "unknown_field";
     }
 
     private static JsonNode getExampleValue(String type) {
@@ -243,7 +324,7 @@ public class MarkDown {
     static class InputParam {
         public String type;
         public String name;
-        public String field; // BODY, QUERY, etc.
+        public String field;
         public List<InputSubParam> subParams;
     }
 
@@ -257,7 +338,7 @@ public class MarkDown {
     @JsonIgnoreProperties(ignoreUnknown = true)
     static class OutputParam {
         public String className;
-        public String origin; // 包含泛型
+        public String origin;
         public String name;
         public List<OutputSubParam> subParams;
     }
@@ -265,8 +346,9 @@ public class MarkDown {
     @JsonIgnoreProperties(ignoreUnknown = true)
     static class OutputSubParam {
         public String className;
+        public String origin;
         public String name;
-        public List<JsonNode> values; // 原始 JSON 中是 values: []
-        public List<OutputSubParam> subParams; // 递归
+        public List<JsonNode> values;
+        public List<OutputSubParam> subParams;
     }
 }

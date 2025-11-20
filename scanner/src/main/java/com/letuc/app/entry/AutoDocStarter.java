@@ -1,13 +1,11 @@
 package com.letuc.app.entry;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.letuc.app.export.JSON;
 import com.letuc.app.export.MarkDown;
 import com.letuc.app.model.SingleControllerInfo;
-import com.letuc.app.scanner.ScanControllers;
-import com.letuc.app.scanner.ScanDI;
-import com.letuc.app.scanner.ScanEnums;
-import com.letuc.app.scanner.ScanFilePaths;
-import com.letuc.app.scanner.ScanUsagePoints;
+import com.letuc.app.scanner.*;
 import com.letuc.app.tool.ASTMap;
 import com.letuc.app.tool.ConfigMap;
 import com.letuc.app.tool.InterfaceToBean;
@@ -34,7 +32,6 @@ public class AutoDocStarter {
             ASTMap.buildMap(allJavaFiles);
             collectTargetMethods();
             System.out.println("索引构建完毕，共 " + ASTMap.AST.size() + " 个类。");
-
             Map<String, SingleControllerInfo> controllerInfo = ScanControllers.scan(allJavaFiles);
             ScanDI.scan(allJavaFiles);
             ScanEnums.scan();
@@ -45,17 +42,17 @@ public class AutoDocStarter {
                     controllerInfo,
                     InterfaceToBean.pairs
             );
+
             System.out.println("接口序列化结果：");
-            StringBuilder sb  = new StringBuilder();
-            for (SingleControllerInfo singleControllerInfo : controllerInfo.values()) {
-                System.out.println(singleControllerInfo.toJson());
-                sb.append(singleControllerInfo.toJson());
-            }
-            MarkDown.saveToFile(sb.toString(), ConfigMap.getExpMarkdownFilePath());
-            JSON.saveToFile(sb.toString(), ConfigMap.getExpJSONFilePath());
+            ObjectMapper mapper = new ObjectMapper();
+            mapper.enable(SerializationFeature.INDENT_OUTPUT);
+            String jsonResult = mapper.writeValueAsString(controllerInfo.values());
+            System.out.println(jsonResult);
+            MarkDown.saveToFile(jsonResult, ConfigMap.getExpMarkdownFilePath());
+            JSON.saveToFile(jsonResult, ConfigMap.getExpJSONFilePath());
             System.out.println("调用链扫描完毕。");
         } catch (Exception e) {
-            System.err.println(e.getMessage());
+            e.printStackTrace();
         }
     }
 }

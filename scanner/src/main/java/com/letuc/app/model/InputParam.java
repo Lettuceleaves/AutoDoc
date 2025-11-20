@@ -1,5 +1,6 @@
 package com.letuc.app.model;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -10,28 +11,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class InputParam {
-    String type;
-    String name;
-    String field;
-    List<InputParam> subParams;
-
-    public String toJson() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("{");
-        sb.append("\"type\":\"").append(type).append("\",");
-        sb.append("\"name\":\"").append(name).append("\",");
-        sb.append("\"field\":\"").append(field).append("\"");
-        if (this.subParams != null && !this.subParams.isEmpty()) {
-            sb.append(",\"subParams\":[");
-            for (int i = 0; i < subParams.size(); i++) {
-                sb.append(subParams.get(i).toJson());
-                if (i < subParams.size() - 1) {
-                    sb.append(",");
-                }
-            }
-            sb.append("]");
-        }
-        sb.append("}");
-        return sb.toString();
-    }
+    private String type;
+    private String name;
+    private String field;
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private List<InputParam> subParams;
 }

@@ -1,5 +1,6 @@
 package com.letuc.app.tool;
 
+import com.github.javaparser.ParserConfiguration;
 import com.github.javaparser.StaticJavaParser;
 import com.github.javaparser.symbolsolver.JavaSymbolSolver;
 import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
@@ -27,6 +28,7 @@ public class SymbolSolver {
         }
 
         StaticJavaParser.getConfiguration()
+                .setLanguageLevel(ParserConfiguration.LanguageLevel.JAVA_21)
                 .setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));
     }
 

@@ -30,6 +30,9 @@ public class ParseSingleController {
     public static SingleControllerInfo parse(Path file) {
         try {
             CompilationUnit cu = ASTMap.AST.get(ASTMap.classNameOfFile.get(file));
+            if (cu == null) {
+                System.err.println(file);
+            }
             Optional<ClassOrInterfaceDeclaration> controllerClass = findControllerClass(cu);
 
             if (controllerClass.isEmpty()) {
